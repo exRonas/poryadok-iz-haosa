@@ -11,10 +11,28 @@ import lessonBernoulli from './art/lesson-bernoulli.webp';
 import lessonMoments from './art/lesson-moments.webp';
 import lessonNormal from './art/lesson-normal.webp';
 import lessonWalk from './art/lesson-walk.webp';
+import lessonChaos from './art/lesson-chaos.webp';
+import lessonClt from './art/lesson-clt.webp';
+import lessonLln from './art/lesson-lln.webp';
+import lessonNoise from './art/lesson-noise.webp';
+import lessonArea from './art/lesson-area.webp';
+import lessonIndicator from './art/lesson-indicator.webp';
+import lessonPrecision from './art/lesson-precision.webp';
+import lessonShare from './art/lesson-share.webp';
 import { SPREAD_QUESTION, SUMMARY_QUESTIONS, centerQuestion, frequencyQuestion, outlierQuestion } from './math';
 import { SUMMARY_QUESTIONS_2, momentsQuestion, normalQuestion, pathsQuestion, walkQuestion } from './math2';
+import { SUMMARY_QUESTIONS_3, chaosQuestion, cltQuestion, llnQuestion, noiseQuestion } from './math3';
+import { PRECISION_SIZES, SUMMARY_QUESTIONS_4, areaQuestion, countInside, indicatorQuestion, precisionQuestion, shareDraws, SHARE_MASK, shareQuestion, squarePoints } from './math4';
 import type { CourseDef, LessonDef } from './types';
+import { AreaWidget } from './widgets/AreaWidget';
+import { AveragingWidget } from './widgets/AveragingWidget';
+import { IndicatorWidget } from './widgets/IndicatorWidget';
+import { PrecisionWidget } from './widgets/PrecisionWidget';
+import { ShareWidget } from './widgets/ShareWidget';
 import { BalanceWidget } from './widgets/BalanceWidget';
+import { ChaosWidget } from './widgets/ChaosWidget';
+import { CltWidget } from './widgets/CltWidget';
+import { LlnWidget } from './widgets/LlnWidget';
 import { MomentsWidget } from './widgets/MomentsWidget';
 import { NormalWidget } from './widgets/NormalWidget';
 import { PathsWidget } from './widgets/PathsWidget';
@@ -23,6 +41,22 @@ import { FrequencyWidget } from './widgets/FrequencyWidget';
 import { OutlierWidget } from './widgets/OutlierWidget';
 import { SpreadWidget } from './widgets/SpreadWidget';
 import {
+  areaInitial,
+  indicatorInitial,
+  precisionInitial,
+  restoreArea,
+  restoreIndicator,
+  restorePrecision,
+  restoreShare,
+  shareInitial,
+  averagingInitial,
+  chaosInitial,
+  cltInitial,
+  llnInitial,
+  restoreAveraging,
+  restoreChaos,
+  restoreClt,
+  restoreLln,
   balanceInitial,
   frequencyInitial,
   momentsInitial,
@@ -336,6 +370,287 @@ const normal = defineLesson({
   question: (state) => normalQuestion(state.m, pct(state.p)),
 });
 
+/* ---------- Курс 3 «Предельные теоремы» ---------- */
+
+const lln = defineLesson({
+  id: 'frequency',
+  number: '3.1',
+  title: 'Частота и вероятность',
+  accent: 'вероятность',
+  lead: 'Один бросок монеты непредсказуем, тысяча — почти нет. Смотрим, как частота успеха ложится на вероятность.',
+  idea: (
+    <>
+      <p>
+        Событие A наступает в каждом опыте с вероятностью p. Сделаем n независимых опытов: n<sub>A</sub> из них — успехи.{' '}
+        <b>Относительная частота</b> w = n<sub>A</sub> / n сама случайна: у разных серий она разная.
+      </p>
+      <p>
+        <b>Закон больших чисел</b> (теорема Бернулли): с ростом n частота w сходится к p. Насколько близко — говорит стандартное
+        отклонение частоты σ<sub>w</sub> = √(p(1 − p)/n): примерно в 95 % серий |w − p| ≤ 2σ<sub>w</sub>.
+      </p>
+      <p>
+        Обратите внимание на корень: чтобы погрешность уменьшилась вдвое, опытов нужно вчетверо больше. Именно поэтому на графике раструб
+        сначала сужается быстро, а потом всё медленнее.
+      </p>
+    </>
+  ),
+  formula: (
+    <>
+      w = n<sub>A</sub> / n → p<span className="c-formula-gap" />σ<sub>w</sub> = √(p(1 − p) / n)
+    </>
+  ),
+  art: lessonLln,
+  experiment: { hash: '#triangle', label: 'Треугольник Серпинского' },
+  hint: 'Нажмите +10 несколько раз: частота скачет. Потом +1000 — линия прижмётся к p и не выйдет из раструба. Поменяйте p и повторите.',
+  initial: llnInitial,
+  restore: restoreLln,
+  Widget: LlnWidget,
+  question: (state) => llnQuestion(state.p / 100),
+});
+
+const averaging = defineLesson({
+  id: 'averaging',
+  number: '3.2',
+  title: 'Усреднение шума',
+  accent: 'шума',
+  lead: 'Каждый кадр испорчен шумом, но среднее многих кадров проявляет картинку. Шум падает как σ/√n.',
+  idea: (
+    <>
+      <p>
+        Каждый пиксель кадра — истинная яркость плюс случайный шум со средним 0 и стандартным отклонением σ. Шумы разных кадров
+        независимы.
+      </p>
+      <p>
+        Среднее n кадров: истинная яркость не меняется, а шумы частично гасят друг друга. Дисперсия среднего n независимых величин в n раз
+        меньше, поэтому шум среднего равен <b>σ/√n</b>.
+      </p>
+      <p>Это тот же закон больших чисел, только для яркости пикселя, и та же цена точности: вдвое тише — вчетверо больше кадров.</p>
+    </>
+  ),
+  formula: (
+    <>
+      D({xbar}) = σ² / n<span className="c-formula-gap" />σ({xbar}) = σ / √n
+    </>
+  ),
+  art: lessonNoise,
+  experiment: { hash: '#noise', label: 'От шума к изображению' },
+  hint: 'Сдвиньте n с 1 до 4, потом до 16 и 64: каждый раз шум уменьшается вдвое. Сделайте шум сильнее — кривая поднимется, но форма останется.',
+  initial: averagingInitial,
+  restore: restoreAveraging,
+  Widget: AveragingWidget,
+  question: (state) => noiseQuestion(state.amplitude),
+});
+
+const clt = defineLesson({
+  id: 'clt',
+  number: '3.3',
+  title: 'Центральная предельная теорема',
+  accent: 'предельная',
+  lead: 'Один кубик даёт ровные столбики. Сумма нескольких кубиков — уже колокол Гаусса.',
+  idea: (
+    <>
+      <p>
+        Возьмём сумму S<sub>n</sub> = X<sub>1</sub> + … + X<sub>n</sub> независимых одинаково распределённых слагаемых со средним μ и
+        дисперсией σ². Тогда E(S<sub>n</sub>) = nμ и D(S<sub>n</sub>) = nσ².
+      </p>
+      <p>
+        <b>Центральная предельная теорема:</b> при большом n распределение S<sub>n</sub> близко к нормальному N(nμ, nσ²) — каким бы ни
+        было распределение одного слагаемого. У кубика оно равномерное (μ = 3,5, σ² = 35/12), а сумма уже 3–4 кубиков похожа на колокол.
+      </p>
+      <p className="c-aside">Доска Гальтона из курса 2 — частный случай: там слагаемые — повороты вправо (0 или 1).</p>
+    </>
+  ),
+  formula: (
+    <>
+      S<sub>n</sub> ≈ N(nμ, nσ²)<span className="c-formula-gap" />кубик: μ = 3,5, σ² = 35/12
+    </>
+  ),
+  art: lessonClt,
+  experiment: { hash: '#galton', label: 'Доска Гальтона' },
+  hint: 'Бросьте 1000 раз один кубик — столбики ровные. Затем поставьте n = 2, 3, 6, 12 и бросайте снова: гистограмма всё точнее ложится на кривую.',
+  initial: cltInitial,
+  restore: restoreClt,
+  Widget: CltWidget,
+  question: (state) => cltQuestion(state.dice),
+});
+
+const chaos = defineLesson({
+  id: 'chaos',
+  number: '3.4',
+  title: 'Порядок из хаоса',
+  accent: 'хаоса',
+  lead: 'Каждая точка ставится наугад, а картинка всегда получается одна и та же — треугольник Серпинского.',
+  idea: (
+    <>
+      <p>
+        <b>Игра хаоса.</b> Есть три вершины A, B, C. Берём текущую точку P, выбираем вершину V наугад (каждую с вероятностью 1/3) и ставим
+        новую точку в середину отрезка PV. Повторяем тысячи раз.
+      </p>
+      <p>
+        Новая точка всегда лежит в угловом треугольнике выбранной вершины, а с учётом предыдущего шага — в одном из 9 треугольников второго
+        уровня. Поэтому доля точек в нём — это частота пары последних вершин, и по закону больших чисел она стремится к 1/9.
+      </p>
+      <p>
+        Случайны отдельные шаги, но не итог: частоты устойчивы, и из них складывается фрактал. Это и есть порядок из хаоса, который
+        объединяет весь курс.
+      </p>
+    </>
+  ),
+  formula: (
+    <>
+      P<sub>k+1</sub> = (P<sub>k</sub> + V) / 2<span className="c-formula-gap" />доля уровня L → (1/3)<sup>L</sup>
+    </>
+  ),
+  art: lessonChaos,
+  experiment: { hash: '#triangle', label: 'Треугольник Серпинского' },
+  hint: 'После +100 видно только облако. Добавьте +1000 и +10 000 — проступят дыры. Следите за таблицей: все 9 долей сходятся к 0,11.',
+  initial: chaosInitial,
+  restore: restoreChaos,
+  Widget: ChaosWidget,
+  question: (state) => chaosQuestion(state.steps),
+});
+
+/* ---------- Курс 4 «Оценивание и Монте-Карло» ---------- */
+
+const share = defineLesson({
+  id: 'share',
+  number: '4.1',
+  title: 'Оценка доли',
+  accent: 'доли',
+  lead: 'Не нужно открывать всё поле, чтобы узнать, сколько места занимает рисунок. Хватит случайной выборки клеток.',
+  idea: (
+    <>
+      <p>
+        В генеральной совокупности из N объектов доля p обладает признаком (здесь — клетки рисунка). Выберем наугад n объектов, k из них с
+        признаком. <b>Выборочная доля</b> p̂ = k / n — оценка неизвестной p.
+      </p>
+      <p>
+        Оценка <b>несмещённая</b>: в среднем по всем возможным выборкам E(p̂) = p. Её стандартная ошибка σ̂ = √(p̂(1 − p̂)/n), и примерно в 95
+        % выборок интервал p̂ ± 2σ̂ накрывает истинную долю — это <b>доверительный интервал</b>.
+      </p>
+      <p>Так работают опросы: по тысяче ответов оценивают мнение миллионов. Важно лишь, чтобы выборка была случайной.</p>
+    </>
+  ),
+  formula: (
+    <>
+      p̂ = k / n<span className="c-formula-gap" />p̂ ± 2√(p̂(1 − p̂) / n)
+    </>
+  ),
+  art: lessonShare,
+  experiment: { hash: '#picture', label: 'Скрытая картинка' },
+  hint: 'Откройте 10 клеток и посмотрите на интервал — он широкий. Добавьте ещё 50 и 100. Потом включите «Показать весь рисунок» и проверьте, попала ли истинная доля в интервал.',
+  initial: shareInitial,
+  restore: restoreShare,
+  Widget: ShareWidget,
+  question: (state) => {
+    const k = shareDraws(state.seed, state.opened).filter((cell) => SHARE_MASK[cell]).length;
+    return shareQuestion(state.opened, k);
+  },
+});
+
+const area = defineLesson({
+  id: 'area',
+  number: '4.2',
+  title: 'Площадь точками',
+  accent: 'точками',
+  lead: 'Бросаем случайные точки в квадрат и считаем, сколько попало в фигуру. Так можно найти площадь — и даже число π.',
+  idea: (
+    <>
+      <p>
+        Фигура F лежит внутри квадрата площади S. Точка, брошенная в квадрат равномерно, попадает в F с вероятностью S<sub>F</sub> / S.
+        Бросим N точек, k из них в фигуре: доля k / N оценивает эту вероятность.
+      </p>
+      <p>
+        Отсюда <b>метод Монте-Карло</b> для площади: S<sub>F</sub> ≈ S · k / N. Он не требует формулы фигуры — нужно только уметь проверить,
+        лежит ли точка внутри.
+      </p>
+      <p>
+        Пример: четверть круга радиуса 1 в квадрате 1 × 1 имеет площадь π/4. Значит, 4k / N — оценка числа π.
+      </p>
+    </>
+  ),
+  formula: (
+    <>
+      S<sub>F</sub> ≈ S · k / N<span className="c-formula-gap" />π ≈ 4k / N
+    </>
+  ),
+  art: lessonArea,
+  experiment: { hash: '#silhouette', label: 'Нарисуй силуэт точками' },
+  hint: 'Бросьте 10 точек, потом 100, 1000 и 10 000. Следите за оценкой π: третий знак после запятой устанавливается очень медленно.',
+  initial: areaInitial,
+  restore: restoreArea,
+  Widget: AreaWidget,
+  question: (state) => areaQuestion(state.thrown, countInside(squarePoints(state.seed, state.thrown), state.thrown)),
+});
+
+const precision = defineLesson({
+  id: 'precision',
+  number: '4.3',
+  title: 'Точность ~ 1/√n',
+  accent: '1/√n',
+  lead: 'Одна оценка — случайное число. Повторим её 200 раз и посмотрим, как разброс оценок зависит от числа точек.',
+  idea: (
+    <>
+      <p>
+        Оценка Монте-Карло — среднее n независимых индикаторов «точка внутри», умноженное на площадь. Её дисперсия равна S² · p(1 − p)/n,
+        а стандартное отклонение <b>σ = S√(p(1 − p)/n)</b>.
+      </p>
+      <p>
+        Точность растёт как √n: чтобы получить ещё один верный знак после запятой (в 10 раз точнее), точек нужно в 100 раз больше. Это
+        главная цена метода Монте-Карло.
+      </p>
+      <p className="c-aside">Зато скорость 1/√n не зависит от размерности: в задачах со многими переменными Монте-Карло часто быстрее сеток.</p>
+    </>
+  ),
+  formula: (
+    <>
+      σ = S · √(p(1 − p) / n)<span className="c-formula-gap" />n × 4 ⇒ σ / 2
+    </>
+  ),
+  art: lessonPrecision,
+  experiment: { hash: '#silhouette', label: 'Нарисуй силуэт точками' },
+  hint: 'Двигайте ползунок вправо: каждый шаг — вчетверо больше точек. Колокол той же формы, но подписи оси сжимаются к π, а σ уменьшается вдвое.',
+  initial: precisionInitial,
+  restore: restorePrecision,
+  Widget: PrecisionWidget,
+  question: (state) => precisionQuestion(PRECISION_SIZES[state.size]),
+});
+
+const indicator = defineLesson({
+  id: 'indicator',
+  number: '4.4',
+  title: 'Метод индикаторов',
+  accent: 'индикаторов',
+  lead: 'Любую вероятность можно оценить средним из нулей и единиц. Это то же самое, что частота, только записанное как случайная величина.',
+  idea: (
+    <>
+      <p>
+        <b>Индикатор</b> события A — случайная величина I<sub>A</sub>, равная 1, если A произошло, и 0, если нет. Её среднее E(I<sub>A</sub>)
+        = P(A), а дисперсия D(I<sub>A</sub>) = P(A)(1 − P(A)).
+      </p>
+      <p>
+        Поэтому вероятность — это матожидание, и её оценивает выборочное среднее индикаторов. Всё, что мы знаем о средних, работает и
+        здесь: закон больших чисел, σ/√N и ЦПТ.
+      </p>
+      <p>
+        Доля клеток рисунка, площадь фигуры, частота успеха — всё это средние индикаторов. Метод индикаторов объединяет весь курс.
+      </p>
+    </>
+  ),
+  formula: (
+    <>
+      E(I<sub>A</sub>) = P(A)<span className="c-formula-gap" />D(I<sub>A</sub>) = P(A)(1 − P(A))
+    </>
+  ),
+  art: lessonIndicator,
+  experiment: { hash: '#picture', label: 'Скрытая картинка' },
+  hint: 'Бросьте кубики по одному, посмотрите на 1 и 0. Потом +1000: среднее индикаторов совпадёт с точной вероятностью из 36 исходов. Поменяйте s.',
+  initial: indicatorInitial,
+  restore: restoreIndicator,
+  Widget: IndicatorWidget,
+  question: (state) => indicatorQuestion(state.s),
+});
+
 export const COURSES: CourseDef[] = [
   {
     id: 'descriptive',
@@ -384,12 +699,22 @@ export const COURSES: CourseDef[] = [
     number: 3,
     title: 'Предельные теоремы',
     summary: 'Почему частота стремится к вероятности, а сумма случайностей — к колоколу Гаусса.',
-    topics: 'Закон больших чисел · Усреднение и σ/√n · ЦПТ · Порядок из хаоса',
+    topics: 'Частота и вероятность · Усреднение шума · ЦПТ · Порядок из хаоса',
     art: courseLimits,
-    lessons: [],
-    ready: false,
-    summaryQuestions: [],
-    experiments: [],
+    lessons: [lln, averaging, clt, chaos],
+    ready: true,
+    cheatsheet: [
+      { label: 'Частота и её разброс', formula: lln.formula },
+      { label: 'Шум среднего n кадров', formula: averaging.formula },
+      { label: 'Центральная предельная теорема', formula: clt.formula },
+      { label: 'Игра хаоса', formula: chaos.formula },
+    ],
+    summaryQuestions: SUMMARY_QUESTIONS_3,
+    experiments: [
+      { hash: '#triangle', label: 'Треугольник Серпинского' },
+      { hash: '#noise', label: 'От шума к изображению' },
+      { hash: '#galton', label: 'Доска Гальтона' },
+    ],
   },
   {
     id: 'montecarlo',
@@ -398,9 +723,18 @@ export const COURSES: CourseDef[] = [
     summary: 'Как оценить долю, площадь и вероятность случайными точками и насколько можно доверять оценке.',
     topics: 'Оценка доли · Площадь точками · Точность 1/√n · Метод индикаторов',
     art: courseMontecarlo,
-    lessons: [],
-    ready: false,
-    summaryQuestions: [],
-    experiments: [],
+    lessons: [share, area, precision, indicator],
+    ready: true,
+    cheatsheet: [
+      { label: 'Оценка доли и интервал', formula: share.formula },
+      { label: 'Площадь методом Монте-Карло', formula: area.formula },
+      { label: 'Точность оценки', formula: precision.formula },
+      { label: 'Индикатор события', formula: indicator.formula },
+    ],
+    summaryQuestions: SUMMARY_QUESTIONS_4,
+    experiments: [
+      { hash: '#picture', label: 'Скрытая картинка' },
+      { hash: '#silhouette', label: 'Нарисуй силуэт точками' },
+    ],
   },
 ];

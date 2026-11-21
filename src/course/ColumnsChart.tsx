@@ -16,12 +16,14 @@ interface Props {
   band?: readonly [number, number] | null;
   /** Подписи оси: номера столбиков, которые подписать (остальные — без подписи). */
   labelEvery?: number;
+  /** Подпись столбика под осью; по умолчанию — его номер. */
+  labelOf?: (index: number) => string;
   height?: number;
   label: string;
 }
 
 /** Столбики из стеклянных деталей Blender с подписями-кнопками под ними. */
-export function ColumnsChart({ values, variant, selected = null, onSelect, format, curve, band = null, labelEvery = 1, height = 220, label }: Props) {
+export function ColumnsChart({ values, variant, selected = null, onSelect, format, curve, band = null, labelEvery = 1, labelOf = String, height = 220, label }: Props) {
   const sprites = useSprites();
   const { ref, width } = useElementWidth<HTMLDivElement>(640);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -92,14 +94,14 @@ export function ColumnsChart({ values, variant, selected = null, onSelect, forma
               className={'c-bin-button' + (i === selected ? ' c-bin-button--on' : '')}
               style={style}
               aria-pressed={i === selected}
-              aria-label={`${i}: ${format(value)}`}
+              aria-label={`${labelOf(i)}: ${format(value)}`}
               onClick={() => onSelect(i)}
             >
-              {i}
+              {labelOf(i)}
             </button>
           ) : (
             <span key={i} className="c-bin-button c-bin-button--static" style={style}>
-              {i}
+              {labelOf(i)}
             </span>
           );
         })}

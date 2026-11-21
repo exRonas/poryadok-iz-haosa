@@ -609,3 +609,119 @@
   background: transparent;
   color: var(--c-muted);
 }
+
+/* ---------- Курс 3: монеты, кадры шума, кубики, клетки игры хаоса ---------- */
+.c-coins,
+.c-dice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+}
+.c-coins img,
+.c-dice img {
+  display: block;
+}
+.c-dice-sum {
+  margin-left: 8px;
+  font: 700 22px var(--c-mono);
+}
+.c-noise-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.c-noise-frame {
+  margin: 0;
+}
+.c-noise-frame canvas {
+  display: block;
+  width: 100%;
+  max-width: 260px;
+  aspect-ratio: 1;
+  margin: 0 auto;
+  border-radius: 16px;
+  image-rendering: pixelated;
+  border: 1px solid var(--c-line);
+}
+.c-noise-frame figcaption {
+  margin-top: 8px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--c-muted);
+}
+.c-cells {
+  display: grid;
+  gap: 8px;
+}
+.c-cells p {
+  margin: 0;
+  font-size: 13px;
+}
+.c-cells table {
+  width: max-content;
+  max-width: 100%;
+  border-collapse: separate;
+  border-spacing: 6px;
+  font: 600 16px var(--c-mono);
+  margin: 0 -6px;
+}
+.c-cells th {
+  font: 500 13px var(--body);
+  color: var(--c-muted);
+  text-align: center;
+}
+.c-cells thead th:first-child,
+.c-cells tbody th {
+  text-align: left;
+  padding-right: 8px;
+}
+.c-cells td {
+  min-width: 64px;
+}
+.c-cells td {
+  padding: 8px 4px;
+  border-radius: 12px;
+  background: var(--c-raised);
+  text-align: center;
+  color: #8290ff;
+}
+
+/* ---------- Курс 4: индикаторы бросков ---------- */
+.c-indicators {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  min-height: 44px;
+}
+.c-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px 6px 6px;
+  border-radius: 14px;
+  background: var(--c-raised);
+  font: 600 14px var(--c-mono);
+}
+.c-indicator-dice {
+  display: flex;
+}
+.c-indicator-sum {
+  color: var(--c-muted);
+}
+.c-indicator b {
+  min-width: 24px;
+  padding: 2px 6px;
+  border-radius: 8px;
+  text-align: center;
+  background: #2e2e34;
+  color: var(--c-muted);
+}
+.c-indicator--on b {
+  background: #4a5cff;
+  color: #ffffff;
+}

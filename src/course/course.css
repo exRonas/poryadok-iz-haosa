@@ -199,10 +199,57 @@
   justify-items: start;
 }
 
-.c-progress {
+.c-hero-progress {
   display: grid;
-  gap: 8px;
-  width: min(320px, 100%);
+  gap: 10px;
+  width: min(400px, 100%);
+  margin-top: 8px;
+}
+.c-hero-progress-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+}
+.c-hero-progress-course {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-accent);
+}
+.c-hero-progress-count {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 22px;
+  line-height: 1;
+  color: #ffffff;
+  white-space: nowrap;
+}
+.c-hero-progress-count span {
+  color: #6a6a76;
+}
+.c-hero-progress-segs {
+  display: flex;
+  gap: 6px;
+}
+.c-hero-progress-segs i {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: #2e2e34;
+  transition:
+    background 0.3s,
+    box-shadow 0.3s;
+}
+.c-hero-progress-segs i.is-done {
+  background: var(--c-accent);
+}
+.c-hero-progress-segs i.is-next {
+  background: #ff6fb5;
+  box-shadow: 0 0 12px rgba(255, 111, 181, 0.65);
+}
+.c-hero-progress-next {
+  margin: 0;
   font-size: 14px;
   color: var(--c-muted);
 }
@@ -337,6 +384,49 @@
 }
 .c-course--open:active {
   transform: translateY(1px);
+}
+/* Наведение на открытый курс: подъём, свечение, блик — как у карточек экспериментов */
+a.c-course {
+  transition:
+    background-color 0.2s,
+    box-shadow 0.35s,
+    transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+a.c-course::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(105deg, transparent 35%, rgba(170, 180, 255, 0.14) 48%, rgba(255, 255, 255, 0.2) 50%, transparent 62%);
+  transform: translateX(-110%);
+}
+a.c-course .c-course-art img {
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+@media (hover: hover) {
+  a.c-course:hover {
+    transform: translateY(-6px);
+    box-shadow:
+      0 0 0 1px #8290ff,
+      0 22px 44px -16px rgba(130, 144, 255, 0.55),
+      0 0 60px -20px rgba(255, 92, 170, 0.35);
+  }
+  a.c-course:hover:active {
+    transform: translateY(-3px);
+  }
+  a.c-course:hover::after {
+    transform: translateX(110%);
+    transition: transform 0.9s cubic-bezier(0.3, 0.6, 0.2, 1);
+  }
+  a.c-course:hover .c-course-art img {
+    transform: translateY(-10px) scale(1.06) rotate(-2deg);
+  }
+}
+a.c-course:focus-visible {
+  box-shadow:
+    0 0 0 2px #8290ff,
+    0 22px 44px -16px rgba(130, 144, 255, 0.55);
 }
 .c-course--soon .c-course-art img {
   opacity: 0.55;
@@ -615,11 +705,21 @@
   }
   .c-course,
   .c-course-art img,
-  .c-bar-track i {
+  .c-bar-track i,
+  .c-hero-progress-segs i {
     transition: none;
   }
   .c-course--ready:hover .c-course-art img,
-  .c-course--open:hover .c-course-art img {
+  .c-course--open:hover .c-course-art img,
+  a.c-course:hover,
+  a.c-course:hover .c-course-art img {
     transform: none;
+  }
+  a.c-course,
+  a.c-course .c-course-art img {
+    transition: none;
+  }
+  a.c-course::after {
+    display: none;
   }
 }

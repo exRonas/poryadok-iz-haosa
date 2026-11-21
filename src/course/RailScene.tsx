@@ -96,8 +96,12 @@ export function RailScene({ values, domain, onMove, underlay, markers = [], abov
   });
 
   const pointer = (event: PointerEvent) => {
-    const box = canvasRef.current?.getBoundingClientRect();
-    return box ? { px: event.clientX - box.left, py: event.clientY - box.top } : { px: 0, py: 0 };
+    const canvas = canvasRef.current;
+    const box = canvas?.getBoundingClientRect();
+    if (!canvas || !box || !box.width) return { px: 0, py: 0 };
+    // Учёт CSS zoom (режим «Проектор»): переводим экранные пиксели в пиксели холста.
+    const k = canvas.offsetWidth / box.width;
+    return { px: (event.clientX - box.left) * k, py: (event.clientY - box.top) * k };
   };
   const onDown = (event: PointerEvent<HTMLCanvasElement>) => {
     const { px, py } = pointer(event);

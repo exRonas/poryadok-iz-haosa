@@ -67,7 +67,8 @@ def reset(width, height, samples):
 
 def _world(scene):
     """Студийный HDRI виден только в отражениях; сквозь стекло — темнота, как фон сайта."""
-    studio = os.path.join(os.path.dirname(bpy.app.binary_path), '5.3', 'datafiles', 'studiolights', 'world', 'studio.exr')
+    # system_resource работает и в blender.exe, и в модуле bpy из pip (там binary_path пустой).
+    studio = os.path.join(bpy.utils.system_resource('DATAFILES'), 'studiolights', 'world', 'studio.exr')
     world = bpy.data.worlds.new('World')
     scene.world = world
     world.use_nodes = True
@@ -153,6 +154,17 @@ def graphite():
         set_inputs(m.node_tree.nodes['Principled BSDF'], Base_Color=(0.08, 0.08, 0.1, 1), Metallic=0.6, Roughness=0.3)
         _cache['graphite'] = m
     return _cache['graphite']
+
+
+def onyx():
+    """Тёмный глянцевый пластик: «закрытые» клетки. Не металл, поэтому плоская грань не выгорает в белое."""
+    if 'onyx' not in _cache:
+        m = bpy.data.materials.new('Onyx')
+        m.use_nodes = True
+        set_inputs(m.node_tree.nodes['Principled BSDF'], Base_Color=(0.006, 0.006, 0.01, 1), Metallic=0.0, Roughness=0.42,
+                   Specular_IOR_Level=0.25)
+        _cache['onyx'] = m
+    return _cache['onyx']
 
 
 def glass(pane=False, center=CENTER, rim=EDGE):

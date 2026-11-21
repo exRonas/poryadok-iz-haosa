@@ -410,7 +410,7 @@ export function silhouetteScene(mask: Mask, sample: Throws | null, hide: boolean
     const stride = Math.max(1, Math.ceil(sample.total / 1600));
     for (let i = 0; i < sample.total; i += stride) {
       const hit = sample.inside[i];
-      scene.dot([unit(sample.xs[i], 1), unit(sample.ys[i], 1), hit ? 0.42 : 0.01], hit ? '#8290ff' : '#6a6a78', hit ? 0.014 : 0.01);
+      scene.dot([unit(sample.xs[i], 1), unit(sample.ys[i], 1), hit ? 0.42 : 0.01], hit ? '#8290ff' : '#6a6a78', hit ? 0.016 : 0.013);
     }
   }
   return scene;

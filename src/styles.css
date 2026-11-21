@@ -691,18 +691,6 @@ svg {
   stroke-dasharray: 8 6;
 }
 
-.triangle-previous {
-  fill: var(--deep);
-  stroke: var(--paper);
-  stroke-width: 2;
-}
-
-.triangle-current {
-  fill: var(--paper);
-  stroke: var(--deep);
-  stroke-width: 3;
-}
-
 .triangle-label {
   font-family: var(--display);
   font-size: 40px;
@@ -1544,6 +1532,12 @@ svg {
 
 /* Режим проектора */
 
+/* Проектор на страницах без эксперимента (главная, курсы, уроки, исследование): их размеры заданы в px,
+   поэтому увеличиваем всё содержимое целиком — текст и кнопки читаются с задних парт. */
+.app--projector-page main {
+  zoom: 1.25;
+}
+
 .app--projector {
   --readout-size: clamp(5rem, 11vh, 8rem);
   --control-height: 64px;
@@ -2296,6 +2290,15 @@ span.dot {
   image-rendering: pixelated;
 }
 
+/* Хромовая рамка-деталь из Blender вокруг кадра; на нажатия не реагирует. */
+.noise-image .noise-frame {
+  position: absolute;
+  inset: -2.2%;
+  width: 104.4%;
+  height: 104.4%;
+  pointer-events: none;
+}
+
 .noise-item figcaption {
   margin-top: var(--space-1);
   font-size: var(--text-sm);
@@ -2942,7 +2945,8 @@ circle.dot--selected {
 }
 
 .legend-swatch--mask {
-  color: var(--water);
+  /* Под цвет синей заливки маски в «Силуэте». */
+  color: #7f8cf0;
 }
 
 .noise-charts {

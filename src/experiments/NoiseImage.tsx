@@ -1,5 +1,6 @@
 import { SpatialView } from '../components/SpatialPlot';
 import { noiseScene } from '../lib/experimentScenes';
+import frameWide from '../course/sprites/frame-wide.webp';
 import { useEffect, useRef, useState } from 'react';
 import { LineChart, RangeField, RunControls, Segmented } from '../components/Charts';
 import { Readouts } from '../components/Readouts';
@@ -77,6 +78,7 @@ function GrayImage({
           <rect className="noise-pick" x={x - 0.5} y={y - 0.5} width="2" height="2" />
           <rect className="noise-pick-outer" x={x - 2} y={y - 2} width="5" height="5" />
         </svg>
+        <img className="noise-frame" src={frameWide} alt="" />
       </div>
       <figcaption>{title}</figcaption>
     </figure>

@@ -23,7 +23,7 @@ describe('parseRoute', () => {
   it('исследование', () => expect(parseRoute('#study/research')).toEqual({ kind: 'research' }));
 
   it('старые и неизвестные адреса ведут в каталог', () => {
-    for (const hash of ['#study/data/sample', '#study/descriptive/nope', '#study/limits/x', '#study/limits/summary', '#study/', '#study/descriptive', '#study/distributions/sample']) {
+    for (const hash of ['#study/data/sample', '#study/descriptive/nope', '#study/limits/x', '#study/montecarlo/x', '#study/', '#study/descriptive', '#study/distributions/sample']) {
       expect(parseRoute(hash)).toEqual({ kind: 'catalog' });
     }
   });
@@ -32,7 +32,7 @@ describe('parseRoute', () => {
 describe('каталог', () => {
   it('4 курса, открыты первые два, в каждом 4 урока и 4 итоговых вопроса', () => {
     expect(COURSES.map((course) => course.id)).toEqual(['descriptive', 'distributions', 'limits', 'montecarlo']);
-    expect(COURSES.map((course) => course.ready)).toEqual([true, true, false, false]);
+    expect(COURSES.map((course) => course.ready)).toEqual([true, true, true, true]);
     expect(COURSES[0].lessons.map((lesson) => lesson.id)).toEqual(['sample', 'center', 'spread', 'outliers']);
     expect(COURSES[1].lessons.map((lesson) => lesson.id)).toEqual(['paths', 'moments', 'walk', 'normal']);
     for (const course of COURSES.filter((item) => item.ready)) {

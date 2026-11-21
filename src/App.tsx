@@ -68,7 +68,7 @@ export function App() {
   const current = EXPERIMENTS.find((item) => item.id === view);
 
   return (
-    <div className={['app', projector && 'app--projector', inSchool && (view === 'study/research' ? 'school-mode' : 'course-mode')].filter(Boolean).join(' ')}>
+    <div className={['app', projector && 'app--projector', projector && !current && 'app--projector-page', inSchool && (view === 'study/research' ? 'school-mode' : 'course-mode')].filter(Boolean).join(' ')}>
       <header className="topbar">
         <Brand onClick={() => { open('gallery'); window.scrollTo({top:0}); }} />
         <nav className="topnav" aria-label="Навигация">

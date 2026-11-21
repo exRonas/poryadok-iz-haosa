@@ -103,9 +103,6 @@ export function Gallery({
             <em>из хаоса</em>
           </h1>
           <p className="hero-summary">Семь интерактивных опытов о том, как из случайных событий рождаются закономерности.</p>
-          <button className="hero-action" type="button" onClick={() => onOpen('galton')}>
-            Начать эксперимент <span aria-hidden="true">↗</span>
-          </button>
         </div>
         <figure className="hero-figure">
           <div className="figure-top">
@@ -149,9 +146,6 @@ export function Gallery({
                   <span className="card-topic">{specs[item.id].topic}</span>
                   <span className="card-title">{item.title}</span>
                   <span className="card-copy">{item.hint}</span>
-                  <span className="card-arrow" aria-hidden="true">
-                    ↗
-                  </span>
                 </span>
               </button>
             </li>

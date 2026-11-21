@@ -1,5 +1,6 @@
 import { SpatialView } from '../components/SpatialPlot';
 import { silhouetteScene } from '../lib/experimentScenes';
+import { drawBall, useSprites, type Sprites } from '../course/sprites';
 import { useEffect, useRef, useState } from 'react';
 import { LineChart, RangeField, RunControls, Segmented } from '../components/Charts';
 import { useFrameLoop } from '../hooks/useFrameLoop';
@@ -27,11 +28,20 @@ interface PointsLayer {
   canvas: HTMLCanvasElement;
   throws: Throws | null;
   drawn: number;
+  withSprites: boolean;
 }
 
-function syncPoints(layer: PointsLayer, throws: Throws | null) {
+/** Первые точки рисуются шариками-деталями из Blender: стекло внутри фигуры, графит снаружи. */
+const SPRITE_POINTS = 2000;
+
+function syncPoints(layer: PointsLayer, throws: Throws | null, sprites: Sprites | null) {
   const context = layer.canvas.getContext('2d');
   if (!context) return;
+  // Детали догрузились после первых точек — перерисовываем слой целиком.
+  if (sprites && !layer.withSprites) {
+    layer.withSprites = true;
+    layer.throws = null;
+  }
   if (layer.throws !== throws) {
     context.clearRect(0, 0, VIEW, VIEW);
     layer.throws = throws;
@@ -39,9 +49,15 @@ function syncPoints(layer: PointsLayer, throws: Throws | null) {
   }
   if (!throws) return;
   for (let index = layer.drawn; index < throws.total; index += 1) {
+    const x = throws.xs[index] * VIEW;
+    const y = throws.ys[index] * VIEW;
+    if (sprites && index < SPRITE_POINTS) {
+      drawBall(context, throws.inside[index] ? sprites.ballGlass : sprites.ballGraphite, x, y, index < 200 ? 5 : 3.5);
+      continue;
+    }
     const size = pointSize(index);
     context.fillStyle = throws.inside[index] ? '#6b7bff' : '#7a7a88';
-    context.fillRect(throws.xs[index] * VIEW - size / 2, throws.ys[index] * VIEW - size / 2, size, size);
+    context.fillRect(x - size / 2, y - size / 2, size, size);
   }
   layer.drawn = throws.total;
 }
@@ -53,7 +69,7 @@ function maskImage(mask: Mask, drawing: boolean): HTMLCanvasElement {
   const context = buffer.getContext('2d');
   if (!context) return buffer;
   const image = context.createImageData(SILHOUETTE_SIZE, SILHOUETTE_SIZE);
-  const [r, g, b] = drawing ? [243, 247, 255] : [98, 220, 235];
+  const [r, g, b] = drawing ? [243, 247, 255] : [74, 92, 255];
   for (let index = 0; index < mask.length; index += 1) {
     if (!mask[index]) continue;
     image.data[index * 4] = r;
@@ -78,6 +94,7 @@ export function Silhouette({ active }: { active: boolean }) {
   const experimentVersion = useRef(0);
   const throwsRef = useRef<Throws | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const sprites = useSprites();
   const layerRef = useRef<PointsLayer | null>(null);
   const last = useRef<[number, number] | null>(null);
   const maskCache = useRef<{ mask: Mask; drawing: boolean; version: number; image: HTMLCanvasElement } | null>(null);
@@ -96,7 +113,7 @@ export function Silhouette({ active }: { active: boolean }) {
       const layerCanvas = document.createElement('canvas');
       layerCanvas.width = VIEW;
       layerCanvas.height = VIEW;
-      layerRef.current = { canvas: layerCanvas, throws: null, drawn: 0 };
+      layerRef.current = { canvas: layerCanvas, throws: null, drawn: 0, withSprites: false };
     }
     const styles = getComputedStyle(canvas);
     context.fillStyle = styles.getPropertyValue('--deep').trim() || '#071530';
@@ -110,13 +127,19 @@ export function Silhouette({ active }: { active: boolean }) {
       context.drawImage((maskCache.current as { image: HTMLCanvasElement }).image, 0, 0, VIEW, VIEW);
     }
     if (!drawing) {
-      syncPoints(layerRef.current, throws);
+      syncPoints(layerRef.current, throws, sprites);
       context.drawImage(layerRef.current.canvas, 0, 0);
     }
-    context.strokeStyle = styles.getPropertyValue('--paper').trim() || '#f3f7ff';
-    context.globalAlpha = 0.4;
-    context.strokeRect(0.5, 0.5, VIEW - 1, VIEW - 1);
-    context.globalAlpha = 1;
+    if (sprites) {
+      // Поле броска в хромовой рамке-детали (маска рисовалась без сглаживания — рамке оно нужно).
+      context.imageSmoothingEnabled = true;
+      context.drawImage(sprites.frameWide, 0, 0, VIEW, VIEW);
+    } else {
+      context.strokeStyle = styles.getPropertyValue('--paper').trim() || '#f3f7ff';
+      context.globalAlpha = 0.4;
+      context.strokeRect(0.5, 0.5, VIEW - 1, VIEW - 1);
+      context.globalAlpha = 1;
+    }
   });
 
   const setMask = (next: Mask) => {
@@ -183,7 +206,7 @@ export function Silhouette({ active }: { active: boolean }) {
         <p className="action-line" data-testid="silhouette-action">
           {drawing
             ? 'Нарисуй фигуру кистью или выбери готовую, затем нажми «Начать опыт».'
-            : 'Бросай случайные точки. Салатовые попали внутрь силуэта. Можно ли по ним оценить площадь рисунка?'}
+            : 'Бросай случайные точки. Синие стеклянные попали внутрь силуэта. Можно ли по ним оценить площадь рисунка?'}
         </p>
       </div>
 

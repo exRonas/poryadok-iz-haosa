@@ -1,32 +1,60 @@
 /**
  * Детали опытов, отрисованные в Blender (tools/render/sprites.py): стеклянные и хромовые шарики,
- * доска, опора, рейка, стеклянный столбик, перегородка. Загружаются один раз и рисуются на холсте.
+ * доска, опора, рейка, стеклянный столбик, перегородка, монеты, кубики, плитки клеток и хромовые рамки. Загружаются один раз и рисуются на холсте.
  */
 import { useEffect, useState } from 'react';
 import ballChrome from './sprites/ball-chrome.webp';
 import ballGlass from './sprites/ball-glass.webp';
+import ballGraphite from './sprites/ball-graphite.webp';
 import ballTheory from './sprites/ball-theory.webp';
 import beam from './sprites/beam.webp';
 import columnGlass from './sprites/column-glass.webp';
+import coinGlass from './sprites/coin-glass.webp';
+import coinGraphite from './sprites/coin-graphite.webp';
 import columnTheory from './sprites/column-theory.webp';
+import die1 from './sprites/die-1.webp';
+import die2 from './sprites/die-2.webp';
+import die3 from './sprites/die-3.webp';
+import die4 from './sprites/die-4.webp';
+import die5 from './sprites/die-5.webp';
+import die6 from './sprites/die-6.webp';
 import divider from './sprites/divider.webp';
+import frameCell from './sprites/frame-cell.webp';
+import frameWide from './sprites/frame-wide.webp';
 import fulcrumHot from './sprites/fulcrum-hot.webp';
 import fulcrum from './sprites/fulcrum.webp';
 import peg from './sprites/peg.webp';
 import rail from './sprites/rail.webp';
+import tileClosed from './sprites/tile-closed.webp';
+import tileGlass from './sprites/tile-glass.webp';
+import tileGraphite from './sprites/tile-graphite.webp';
 
 const SOURCES = {
   ballChrome,
   ballGlass,
+  ballGraphite,
   ballTheory,
   beam,
   columnGlass,
   columnTheory,
+  coinGlass,
+  coinGraphite,
+  die1,
+  die2,
+  die3,
+  die4,
+  die5,
+  die6,
   divider,
+  frameCell,
+  frameWide,
   fulcrum,
   fulcrumHot,
   peg,
   rail,
+  tileClosed,
+  tileGlass,
+  tileGraphite,
 };
 
 export type SpriteName = keyof typeof SOURCES;
@@ -56,6 +84,15 @@ export function loadSprites(): Promise<Sprites> {
   });
   return loading;
 }
+
+/** Хромовая рамка-деталь вокруг квадрата (x, y, side): трубка лежит по краю, половина толщины — снаружи. */
+export function drawFrame(context: CanvasRenderingContext2D, image: HTMLImageElement, x: number, y: number, side: number, bar: number): void {
+  const grow = side * bar;
+  context.drawImage(image, x - grow, y - grow, side + 2 * grow, side + 2 * grow);
+}
+
+/** Грань кубика 1…6 — картинка детали (для <img>, без холста). */
+export const DIE_FACES: readonly string[] = [die1, die2, die3, die4, die5, die6];
 
 /** Детали или null, пока они грузятся (в собранном файле — мгновенно: картинки встроены). */
 export function useSprites(): Sprites | null {

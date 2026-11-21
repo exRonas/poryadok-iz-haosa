@@ -78,7 +78,7 @@ export class Scene {
   }
 }
 
-/** Цвет точки → деталь из Blender: синие — стекло, малиновые — «теоретическое» стекло, светлые — хром. */
+/** Цвет точки → деталь из Blender: синие — стекло, малиновые — «теоретическое» стекло, светлые — хром, серые — графит. */
 function ballSprite(color: string): HTMLImageElement | null {
   const sprites = getSprites();
   if (!sprites) return null;
@@ -92,6 +92,7 @@ function ballSprite(color: string): HTMLImageElement | null {
   if (r > 200 && g < 170 && b > 150) return sprites.ballTheory;
   if (b > r + 40 && b > g + 30) return sprites.ballGlass;
   if (r > 190 && g > 190 && b > 190) return sprites.ballChrome;
+  if (r > 100 && r < 170 && Math.abs(r - g) < 20 && b - r < 30) return sprites.ballGraphite;
   return null;
 }
 

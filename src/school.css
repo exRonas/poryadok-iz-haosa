@@ -170,9 +170,22 @@
   border-width: 1px;
   border-radius: 12px;
 }
+/* Главная кнопка и нажатый переключатель: белый текст на синем (4,9:1), а не белый на белом. */
 .school-mode .study .btn--primary,
 .school-mode .study .btn--toggle[aria-pressed='true'] {
-  color: white;
+  color: #ffffff;
+  background: var(--lamp);
+  border-color: var(--lamp);
+}
+.school-mode .study .btn--primary:hover:not(:disabled),
+.school-mode .study .btn--toggle[aria-pressed='true']:hover:not(:disabled) {
+  background: var(--lamp-hover);
+  border-color: var(--lamp-hover);
+}
+.school-mode .study .btn--primary:active:not(:disabled),
+.school-mode .study .btn--toggle[aria-pressed='true']:active:not(:disabled) {
+  background: var(--lamp-pressed);
+  border-color: var(--lamp-pressed);
 }
 .school-mode .study-start,
 .school-mode .paper-quiz,

@@ -1,5 +1,8 @@
 import { SpatialView } from '../components/SpatialPlot';
 import { triangleScene } from '../lib/experimentScenes';
+import ballChrome from '../course/sprites/ball-chrome.webp';
+import ballGlass from '../course/sprites/ball-glass.webp';
+import ballTheory from '../course/sprites/ball-theory.webp';
 import { useEffect, useRef, useState } from 'react';
 import { RangeField, RunControls, Segmented } from '../components/Charts';
 import { Readouts } from '../components/Readouts';
@@ -404,14 +407,18 @@ export function SierpinskiTriangle({ active }: { active: boolean }) {
                 />
                 <svg viewBox={`0 0 ${CANVAS_WIDTH} ${CANVAS_HEIGHT}`} aria-hidden="true">
                   <polygon className="triangle-outline" points={VERTICES.map((point) => `${point.x},${point.y}`).join(' ')} />
+                  {/* Вершины, текущая и прошлая точки — шарики-детали из Blender. */}
+                  {VERTICES.map((point, index) => (
+                    <image key={index} href={ballTheory} x={point.x - 11} y={point.y - 11} width={22} height={22} />
+                  ))}
                   {showMove && moveTarget ? (
                     <>
                       <line className="triangle-move" x1={snapshot.previousX} y1={snapshot.previousY} x2={moveTarget.x} y2={moveTarget.y} />
                       <circle className="triangle-vertex-pick" cx={moveTarget.x} cy={moveTarget.y} r="14" />
-                      <circle className="triangle-previous" cx={snapshot.previousX} cy={snapshot.previousY} r="6" />
+                      <image href={ballChrome} x={snapshot.previousX - 8} y={snapshot.previousY - 8} width={16} height={16} />
                     </>
                   ) : null}
-                  <circle className="triangle-current" cx={snapshot.x} cy={snapshot.y} r="8" />
+                  <image className="triangle-current-ball" href={ballGlass} x={snapshot.x - 11} y={snapshot.y - 11} width={22} height={22} />
                   {VERTEX_INDEXES.map((index) => (
                     <text
                       key={index}

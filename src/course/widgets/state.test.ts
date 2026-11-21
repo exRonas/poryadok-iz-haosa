@@ -1,6 +1,29 @@
 import { describe, expect, it } from 'vitest';
 import { SPREAD_BASE, outlierRow } from '../math';
-import { pathsInitial, restoreOutlier, restorePaths, restoreSpread, restoreSummary, summaryInitial } from './state';
+import {
+  areaInitial,
+  indicatorInitial,
+  precisionInitial,
+  restoreArea,
+  restoreIndicator,
+  restorePrecision,
+  restoreShare,
+  shareInitial,
+  averagingInitial,
+  chaosInitial,
+  cltInitial,
+  llnInitial,
+  pathsInitial,
+  restoreAveraging,
+  restoreChaos,
+  restoreClt,
+  restoreLln,
+  restoreOutlier,
+  restorePaths,
+  restoreSpread,
+  restoreSummary,
+  summaryInitial,
+} from './state';
 
 describe('restoreSummary', () => {
   it('корректное состояние восстанавливается как есть', () => {
@@ -45,5 +68,38 @@ describe('restoreOutlier', () => {
   });
   it('значения не той длины — исходный ряд', () => {
     expect(restoreOutlier({ n: 6, values: [40, 50] })).toEqual({ n: 6, values: outlierRow(6, 0) });
+  });
+});
+
+describe('состояния курса 3', () => {
+  it('верные сохранения восстанавливаются', () => {
+    expect(restoreLln({ p: 30, thrown: 1200, seed: 5 })).toEqual({ p: 30, thrown: 1200, seed: 5 });
+    expect(restoreAveraging({ amplitude: 80, frames: 16, seed: 9 })).toEqual({ amplitude: 80, frames: 16, seed: 9 });
+    expect(restoreClt({ dice: 12, thrown: 5000, seed: 3 })).toEqual({ dice: 12, thrown: 5000, seed: 3 });
+    expect(restoreChaos({ steps: 30000, seed: 1 })).toEqual({ steps: 30000, seed: 1 });
+  });
+  it('мусор и значения вне диапазона — начальное состояние', () => {
+    expect(restoreLln({ p: 35, thrown: 0, seed: 5 })).toEqual(llnInitial());
+    expect(restoreLln({ p: 50, thrown: 5001, seed: 5 })).toEqual(llnInitial());
+    expect(restoreAveraging({ amplitude: 50, frames: 1, seed: 1 })).toEqual(averagingInitial());
+    expect(restoreAveraging({ amplitude: 80, frames: 0, seed: 1 })).toEqual(averagingInitial());
+    expect(restoreClt({ dice: 13, thrown: 0, seed: 1 })).toEqual(cltInitial());
+    expect(restoreChaos({ steps: -1, seed: 1 })).toEqual(chaosInitial());
+    expect(restoreChaos(null)).toEqual(chaosInitial());
+  });
+});
+
+describe('состояния курса 4', () => {
+  it('верные сохранения восстанавливаются', () => {
+    expect(restoreShare({ opened: 120, seed: 4, reveal: true })).toEqual({ opened: 120, seed: 4, reveal: true });
+    expect(restoreArea({ thrown: 20000, seed: 4 })).toEqual({ thrown: 20000, seed: 4 });
+    expect(restorePrecision({ size: 4, seed: 4 })).toEqual({ size: 4, seed: 4 });
+    expect(restoreIndicator({ s: 3, thrown: 10, seed: 4 })).toEqual({ s: 3, thrown: 10, seed: 4 });
+  });
+  it('мусор — начальное состояние', () => {
+    expect(restoreShare({ opened: 401, seed: 4, reveal: false })).toEqual(shareInitial());
+    expect(restoreArea({ thrown: 1.5, seed: 4 })).toEqual(areaInitial());
+    expect(restorePrecision({ size: 5, seed: 4 })).toEqual(precisionInitial());
+    expect(restoreIndicator({ s: 2, thrown: 0, seed: 4 })).toEqual(indicatorInitial());
   });
 });

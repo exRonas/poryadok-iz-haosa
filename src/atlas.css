@@ -146,29 +146,6 @@ body {
   font-size: clamp(15px, 1.27vw, 18px);
   line-height: 1.53;
 }
-.hero-action {
-  display: inline-flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 26px;
-  margin-top: 24px;
-  padding: 12px 18px;
-  background: var(--lamp);
-  color: #06081f;
-  border: 1px solid var(--lamp);
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 650;
-}
-.hero-action:hover {
-  background: var(--lamp-hover);
-}
-.hero-action span {
-  font-family: Arial, sans-serif;
-  font-size: 21px;
-  line-height: 1;
-}
 .hero-figure,
 .spatial-stage,
 .card-plate {
@@ -379,20 +356,12 @@ body {
   font-weight: 560;
   letter-spacing: -0.045em;
   line-height: 1.15;
-  padding-right: 22px;
 }
 .card-copy {
   max-width: 52ch;
   font-size: 14px;
   line-height: 1.5;
   color: #b4b4bd;
-}
-.card-arrow {
-  position: absolute;
-  right: 18px;
-  top: 32px;
-  font-size: 20px;
-  color: #b8b8c2;
 }
 .atlas-footer {
   display: flex;
@@ -583,9 +552,6 @@ body {
   .hero-summary {
     max-width: 36ch;
   }
-  .hero-action {
-    margin-top: 18px;
-  }
   .hero-figure {
     height: 243px;
   }
@@ -650,24 +616,6 @@ body {
   line-height: 0.92;
   color: var(--lamp);
 }
-.hero-action {
-  min-height: 48px;
-  padding: 12px 24px;
-  background: #ffffff;
-  border-color: #ffffff;
-  border-radius: 16px;
-  color: #000000;
-  font-size: 16px;
-  font-weight: 500;
-}
-.hero-action:hover {
-  background: #e4e4ea;
-  border-color: #e4e4ea;
-}
-.hero-action:active {
-  background: #cfcfd8;
-  transform: translateY(1px);
-}
 .hero-figure {
   border-radius: 24px;
   overflow: hidden;
@@ -696,8 +644,93 @@ body {
   border: 0;
   border-radius: 24px;
 }
-.atlas-card:hover {
+.atlas-card {
+  transition:
+    background 0.15s,
+    box-shadow 0.15s;
+}
+.atlas-card:hover,
+.atlas-card:focus-visible {
   background: #222226;
+  box-shadow:
+    0 0 0 1px #8290ff,
+    0 12px 32px -12px rgba(130, 144, 255, 0.45);
+}
+
+/* Наведение на карточку: подъём, наезд на превью, блик по стеклу */
+.atlas-card {
+  position: relative;
+  transition:
+    background 0.2s,
+    box-shadow 0.35s,
+    transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.card-plate {
+  overflow: hidden;
+  transition: background-position 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.card-plate > :not(.card-formula) {
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.card-plate::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(105deg, transparent 35%, rgba(170, 180, 255, 0.16) 48%, rgba(255, 255, 255, 0.22) 50%, transparent 62%);
+  transform: translateX(-110%);
+  transition: transform 0s;
+}
+.card-formula,
+.card-topic,
+.card-title {
+  transition: color 0.25s;
+}
+@media (hover: hover) {
+  .atlas-card:hover {
+    transform: translateY(-6px);
+    box-shadow:
+      0 0 0 1px #8290ff,
+      0 22px 44px -16px rgba(130, 144, 255, 0.55),
+      0 0 60px -20px rgba(255, 92, 170, 0.35);
+  }
+  .atlas-card:hover:active {
+    transform: translateY(-3px);
+  }
+  .atlas-card:hover .card-plate {
+    background-position: 13px 13px;
+  }
+  .atlas-card:hover .card-plate > :not(.card-formula) {
+    transform: scale(1.06);
+  }
+  .atlas-card:hover .card-plate::after {
+    transform: translateX(110%);
+    transition: transform 0.9s cubic-bezier(0.3, 0.6, 0.2, 1);
+  }
+  .atlas-card:hover .card-formula {
+    color: #8290ff;
+  }
+  .atlas-card:hover .card-topic {
+    color: #ff6fb5;
+  }
+  .atlas-card:hover .card-title {
+    color: #ffffff;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .atlas-card,
+  .card-plate,
+  .card-plate > :not(.card-formula) {
+    transition: none;
+  }
+  .atlas-card:hover,
+  .atlas-card:hover .card-plate > :not(.card-formula) {
+    transform: none;
+  }
+  .card-plate::after {
+    display: none;
+  }
 }
 .atlas-card:active {
   transform: translateY(1px);

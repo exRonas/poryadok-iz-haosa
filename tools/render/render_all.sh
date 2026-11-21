@@ -10,14 +10,14 @@ mkdir -p "$WORK/frames" "$WORK/frames960" "$ART"
 
 render() { "$BLENDER" -b --factory-startup -P "$ROOT/tools/render/assets.py" -- "$@" 2>&1 | grep -E "WROTE|FRAME|MISSING|Traceback" || true; }
 
-for asset in hero course-descriptive course-distributions course-limits course-montecarlo lesson-sample lesson-center lesson-spread lesson-outliers lesson-bernoulli lesson-moments lesson-walk lesson-normal; do
+for asset in hero course-descriptive course-distributions course-limits course-montecarlo lesson-sample lesson-center lesson-spread lesson-outliers lesson-bernoulli lesson-moments lesson-walk lesson-normal lesson-lln lesson-noise lesson-clt lesson-chaos lesson-share lesson-area lesson-precision lesson-indicator; do
   render --asset "$asset" --out "$WORK/$asset.png" --samples 256
 done
 python "$ROOT/tools/render/to_webp.py" "$WORK/hero.png" "$ART/hero.webp" --width 1200 --no-trim
 for asset in course-descriptive course-distributions course-limits course-montecarlo; do
   python "$ROOT/tools/render/to_webp.py" "$WORK/$asset.png" "$ART/$asset.webp" --width 900
 done
-for asset in lesson-sample lesson-center lesson-spread lesson-outliers lesson-bernoulli lesson-moments lesson-walk lesson-normal; do
+for asset in lesson-sample lesson-center lesson-spread lesson-outliers lesson-bernoulli lesson-moments lesson-walk lesson-normal lesson-lln lesson-noise lesson-clt lesson-chaos lesson-share lesson-area lesson-precision lesson-indicator; do
   python "$ROOT/tools/render/to_webp.py" "$WORK/$asset.png" "$ART/$asset.webp" --width 1100
 done
 

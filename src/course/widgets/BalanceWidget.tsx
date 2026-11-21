@@ -142,9 +142,12 @@ export function BalanceWidget({ state, onChange }: WidgetProps<BalanceState>) {
   }, [sprites, W]);
 
   const toUnits = (event: PointerEvent) => {
-    const box = canvasRef.current?.getBoundingClientRect();
-    if (!box) return { u: 0, y: 0 };
-    return { u: (event.clientX - box.left - margin) / ppu, y: event.clientY - box.top };
+    const canvas = canvasRef.current;
+    const box = canvas?.getBoundingClientRect();
+    if (!canvas || !box || !box.width) return { u: 0, y: 0 };
+    // Учёт CSS zoom (режим «Проектор»): переводим экранные пиксели в пиксели холста.
+    const k = canvas.offsetWidth / box.width;
+    return { u: ((event.clientX - box.left) * k - margin) / ppu, y: (event.clientY - box.top) * k };
   };
 
   const onDown = (event: PointerEvent<HTMLCanvasElement>) => {

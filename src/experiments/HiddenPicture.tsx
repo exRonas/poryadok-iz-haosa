@@ -1,5 +1,6 @@
 import { SpatialView } from '../components/SpatialPlot';
 import { pictureScene } from '../lib/experimentScenes';
+import { useSprites } from '../course/sprites';
 import { useEffect, useId, useRef, useState } from 'react';
 import { LineChart, RunControls, Segmented } from '../components/Charts';
 import { Readouts } from '../components/Readouts';
@@ -54,6 +55,7 @@ function PictureOverlay({
   onSelect: (cell: number) => void;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const sprites = useSprites();
   const { size, hits } = state;
 
   useEffect(() => {
@@ -76,21 +78,29 @@ function PictureOverlay({
       } else if (hits[index] === 0) {
         context.fillStyle = cover;
         context.fillRect(x, y, cell, cell);
+        // Закрытая клетка — тёмная плитка-деталь из Blender.
+        if (sprites) context.drawImage(sprites.tileClosed, x + cell * 0.04, y + cell * 0.04, cell * 0.92, cell * 0.92);
+      } else if (sprites && size <= 20) {
+        // Открытая клетка — окно в хромовой рамке, сквозь него видна картинка.
+        context.drawImage(sprites.frameCell, x, y, cell, cell);
       }
     }
-    context.strokeStyle = rule;
-    context.globalAlpha = size >= 40 ? 0.35 : 0.8;
-    context.lineWidth = 1;
-    context.beginPath();
-    for (let line = 0; line <= size; line += 1) {
-      const at = Math.round(line * cell) + 0.5;
-      context.moveTo(at, 0);
-      context.lineTo(at, OVERLAY);
-      context.moveTo(0, at);
-      context.lineTo(OVERLAY, at);
+    // С плитками-деталями сетка не нужна: швы между ними и так видны.
+    if (!sprites || view === 'heat') {
+      context.strokeStyle = rule;
+      context.globalAlpha = size >= 40 ? 0.35 : 0.8;
+      context.lineWidth = 1;
+      context.beginPath();
+      for (let line = 0; line <= size; line += 1) {
+        const at = Math.round(line * cell) + 0.5;
+        context.moveTo(at, 0);
+        context.lineTo(at, OVERLAY);
+        context.moveTo(0, at);
+        context.lineTo(OVERLAY, at);
+      }
+      context.stroke();
+      context.globalAlpha = 1;
     }
-    context.stroke();
-    context.globalAlpha = 1;
     const outline = (index: number, color: string, width: number) => {
       context.strokeStyle = color;
       context.lineWidth = width;
@@ -98,7 +108,7 @@ function PictureOverlay({
     };
     if (state.lastCell !== null) outline(state.lastCell, state.lastWasRepeat ? buoy : lamp, Math.max(2, cell / 8));
     if (selected !== null) outline(selected, water, Math.max(3, cell / 6));
-  }, [hits, size, view, selected, state.lastCell, state.lastWasRepeat]);
+  }, [hits, size, view, selected, state.lastCell, state.lastWasRepeat, sprites]);
 
   return (
     <canvas
