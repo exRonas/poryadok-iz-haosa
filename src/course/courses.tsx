@@ -24,6 +24,10 @@ import { SUMMARY_QUESTIONS_2, momentsQuestion, normalQuestion, pathsQuestion, wa
 import { SUMMARY_QUESTIONS_3, chaosQuestion, cltQuestion, llnQuestion, noiseQuestion } from './math3';
 import { PRECISION_SIZES, SUMMARY_QUESTIONS_4, areaQuestion, countInside, indicatorQuestion, precisionQuestion, shareDraws, SHARE_MASK, shareQuestion, squarePoints } from './math4';
 import type { CourseDef, LessonDef } from './types';
+import { lecture11, lecture12, lecture13, lecture14, reading11, reading12, reading13, reading14 } from './lectures/course1';
+import { lecture21, lecture22, lecture23, lecture24, reading21, reading22, reading23, reading24 } from './lectures/course2';
+import { lecture31, lecture32, lecture33, lecture34, reading31, reading32, reading33, reading34 } from './lectures/course3';
+import { lecture41, lecture42, lecture43, lecture44, reading41, reading42, reading43, reading44 } from './lectures/course4';
 import { AreaWidget } from './widgets/AreaWidget';
 import { AveragingWidget } from './widgets/AveragingWidget';
 import { IndicatorWidget } from './widgets/IndicatorWidget';
@@ -123,6 +127,8 @@ const sample = defineLesson({
   restore: restoreFrequency,
   Widget: FrequencyWidget,
   question: (state) => frequencyQuestion(state.seed, state.thrown, state.bin),
+  lecture: lecture11,
+  reading: reading11,
 });
 
 const center = defineLesson({
@@ -156,6 +162,8 @@ const center = defineLesson({
   restore: restoreBalance,
   Widget: BalanceWidget,
   question: (state) => centerQuestion(state.values),
+  lecture: lecture12,
+  reading: reading12,
 });
 
 const spread = defineLesson({
@@ -195,6 +203,8 @@ const spread = defineLesson({
   restore: restoreSpread,
   Widget: SpreadWidget,
   question: () => SPREAD_QUESTION,
+  lecture: lecture13,
+  reading: reading13,
 });
 
 const outliers = defineLesson({
@@ -226,6 +236,8 @@ const outliers = defineLesson({
   restore: restoreOutlier,
   Widget: OutlierWidget,
   question: (state) => outlierQuestion(state.n),
+  lecture: lecture14,
+  reading: reading14,
 });
 
 /* ---------- Курс 2 «Распределения» ---------- */
@@ -266,6 +278,8 @@ const paths = defineLesson({
   restore: restorePaths,
   Widget: PathsWidget,
   question: (state) => pathsQuestion(state.m, state.k),
+  lecture: lecture21,
+  reading: reading21,
 });
 
 const moments = defineLesson({
@@ -299,6 +313,8 @@ const moments = defineLesson({
   restore: restoreMoments,
   Widget: MomentsWidget,
   question: (state) => momentsQuestion(state.m, pct(state.p)),
+  lecture: lecture22,
+  reading: reading22,
 });
 
 const walk = defineLesson({
@@ -333,6 +349,8 @@ const walk = defineLesson({
   restore: restoreWalk,
   Widget: WalkWidget,
   question: (state) => walkQuestion(state.k, pct(state.p)),
+  lecture: lecture23,
+  reading: reading23,
 });
 
 const normal = defineLesson({
@@ -368,6 +386,8 @@ const normal = defineLesson({
   restore: restoreNormal,
   Widget: NormalWidget,
   question: (state) => normalQuestion(state.m, pct(state.p)),
+  lecture: lecture24,
+  reading: reading24,
 });
 
 /* ---------- Курс 3 «Предельные теоремы» ---------- */
@@ -406,6 +426,8 @@ const lln = defineLesson({
   restore: restoreLln,
   Widget: LlnWidget,
   question: (state) => llnQuestion(state.p / 100),
+  lecture: lecture31,
+  reading: reading31,
 });
 
 const averaging = defineLesson({
@@ -439,6 +461,8 @@ const averaging = defineLesson({
   restore: restoreAveraging,
   Widget: AveragingWidget,
   question: (state) => noiseQuestion(state.amplitude),
+  lecture: lecture32,
+  reading: reading32,
 });
 
 const clt = defineLesson({
@@ -472,6 +496,8 @@ const clt = defineLesson({
   restore: restoreClt,
   Widget: CltWidget,
   question: (state) => cltQuestion(state.dice),
+  lecture: lecture33,
+  reading: reading33,
 });
 
 const chaos = defineLesson({
@@ -508,6 +534,8 @@ const chaos = defineLesson({
   restore: restoreChaos,
   Widget: ChaosWidget,
   question: (state) => chaosQuestion(state.steps),
+  lecture: lecture34,
+  reading: reading34,
 });
 
 /* ---------- Курс 4 «Оценивание и Монте-Карло» ---------- */
@@ -536,6 +564,8 @@ const share = defineLesson({
       p̂ = k / n<span className="c-formula-gap" />p̂ ± 2√(p̂(1 − p̂) / n)
     </>
   ),
+  lecture: lecture41,
+  reading: reading41,
   art: lessonShare,
   experiment: { hash: '#picture', label: 'Скрытая картинка' },
   hint: 'Откройте 10 клеток и посмотрите на интервал — он широкий. Добавьте ещё 50 и 100. Потом включите «Показать весь рисунок» и проверьте, попала ли истинная доля в интервал.',
@@ -581,6 +611,8 @@ const area = defineLesson({
   restore: restoreArea,
   Widget: AreaWidget,
   question: (state) => areaQuestion(state.thrown, countInside(squarePoints(state.seed, state.thrown), state.thrown)),
+  lecture: lecture42,
+  reading: reading42,
 });
 
 const precision = defineLesson({
@@ -614,6 +646,8 @@ const precision = defineLesson({
   restore: restorePrecision,
   Widget: PrecisionWidget,
   question: (state) => precisionQuestion(PRECISION_SIZES[state.size]),
+  lecture: lecture43,
+  reading: reading43,
 });
 
 const indicator = defineLesson({
@@ -649,6 +683,8 @@ const indicator = defineLesson({
   restore: restoreIndicator,
   Widget: IndicatorWidget,
   question: (state) => indicatorQuestion(state.s),
+  lecture: lecture44,
+  reading: reading44,
 });
 
 export const COURSES: CourseDef[] = [

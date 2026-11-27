@@ -5,14 +5,60 @@ import { Accent } from './Catalog';
 import { Quiz } from './Quiz';
 import { type LessonRecord, readRecord, writeRecord } from './progress';
 import { answerResetNeeded, lessonHash, summaryHash } from './routing';
-import type { CourseDef, LessonDef } from './types';
+import type { CourseDef, LectureSection, LessonDef } from './types';
 
 const STEPS = [
-  { id: 'lesson-idea', label: 'Идея' },
+  { id: 'lesson-idea', label: 'Лекция' },
   { id: 'lesson-lab', label: 'Опыт' },
   { id: 'lesson-check', label: 'Вопрос' },
   { id: 'lesson-next', label: 'Дальше' },
 ];
+
+/** Лекция: разделы по порядку, у каждого — текст, мини-опыт, пример и типичная ошибка. */
+function Lecture({ sections }: { sections: LectureSection[] }) {
+  return (
+    <div className="c-lecture">
+      <nav className="c-lecture-toc" aria-label="Разделы лекции">
+        <ol>
+          {sections.map((section, i) => (
+            <li key={i}>
+              <a href={`#lecture-${i + 1}`} onClick={(event) => { event.preventDefault(); scrollTo(`lecture-${i + 1}`); }}>
+                {section.title}
+              </a>
+            </li>
+          ))}
+        </ol>
+      </nav>
+      {sections.map((section, i) => (
+        <section key={i} id={`lecture-${i + 1}`} className="c-lecture-part" aria-labelledby={`lecture-${i + 1}-title`}>
+          <h3 className="c-lecture-title" id={`lecture-${i + 1}-title`}>
+            <span className="c-lecture-num">{i + 1}</span>
+            {section.title}
+          </h3>
+          <div className="c-prose">{section.body}</div>
+          {section.demo ? (
+            <div className="c-demo">
+              <p className="c-lecture-label">Попробуйте</p>
+              {section.demo}
+            </div>
+          ) : null}
+          {section.example ? (
+            <div className="c-example">
+              <p className="c-lecture-label">Пример</p>
+              <div className="c-prose">{section.example}</div>
+            </div>
+          ) : null}
+          {section.pitfall ? (
+            <div className="c-pitfall">
+              <p className="c-lecture-label">Частая ошибка</p>
+              <div className="c-prose">{section.pitfall}</div>
+            </div>
+          ) : null}
+        </section>
+      ))}
+    </div>
+  );
+}
 
 const scrollTo = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
@@ -126,12 +172,47 @@ export function Lesson({
           <section id="lesson-idea" className="c-block" aria-labelledby="lesson-idea-title">
             <p className="c-num">Шаг 1</p>
             <h2 className="c-title c-title--md" id="lesson-idea-title">
-              Идея
+              Лекция
             </h2>
-            <div className="c-prose">{lesson.idea}</div>
-            <div className="c-formula" role="math" aria-label="Главная формула урока">
-              {lesson.formula}
+            {lesson.lecture ? <Lecture sections={lesson.lecture} /> : <div className="c-prose">{lesson.idea}</div>}
+            <div className="c-formula-box">
+              <p className="c-lecture-label">Главная формула урока</p>
+              <div className="c-formula" role="math" aria-label="Главная формула урока">
+                {lesson.formula}
+              </div>
+              {lesson.legend ? (
+                <dl className="c-legend">
+                  {lesson.legend.map((item, i) => (
+                    <div key={i}>
+                      <dt>{item.sign}</dt>
+                      <dd>{item.meaning}</dd>
+                    </div>
+                  ))}
+                </dl>
+              ) : null}
             </div>
+            {lesson.reading ? (
+              <div className="c-reading">
+                <p className="c-lecture-label">Материалы по теме</p>
+                <ul>
+                  {lesson.reading.map((item) => (
+                    <li key={item.title}>
+                      <span className="c-reading-kind">{item.kind}</span>
+                      <span>
+                        {item.href ? (
+                          <a href={item.href} target="_blank" rel="noreferrer">
+                            {item.title}
+                          </a>
+                        ) : (
+                          <b>{item.title}</b>
+                        )}
+                        <span className="c-reading-source"> — {item.source}</span>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
           </section>
 
           <section id="lesson-lab" className="c-block" aria-labelledby="lesson-lab-title">
